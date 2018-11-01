@@ -1,0 +1,375 @@
+" An example for a vimrc file.
+"
+" Maintainer:   Bram Moolenaar <Bram@vim.org>
+" Last change:  2008 Dec 17
+"
+" To use it, copy it to
+"     for Unix and OS/2:  ~/.vimrc
+"         for Amiga:  s:.vimrc
+"  for MS-DOS and Win32:  $VIM\_vimrc
+"       for OpenVMS:  sys$login:.vimrc
+
+" When started as "evim", evim.vim will already have done these settings.
+if v:progname =~? "evim"
+  finish
+endif
+
+" This must be first, because it changes other options as a side effect.
+set nocompatible
+set autoindent        " always set autoindenting on
+syntax on
+filetype plugin indent on
+set smartindent
+
+
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+if has("vms")
+  set nobackup      " do not keep a backup file, use versions instead
+else
+  set backup        " keep a backup file
+endif
+set history=400     " keep 50 lines of command line history
+set ruler       " show the cursor position all the time
+set showcmd     " display incomplete commands
+set incsearch       " do incremental searching
+
+" For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
+" let &guioptions = substitute(&guioptions, "t", "", "g")
+
+" Don't use Ex mode, use Q for formatting
+map Q gq
+" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
+
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+  set mouse=a
+endif
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+  syntax on
+  set hlsearch
+endif
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+
+  " Enable file type detection.
+  " Use the default filetype settings, so that mail gets 'tw' set to 72,
+  " 'cindent' is on in C files, etc.
+  " Also load indent files, to automatically do language-dependent indenting.
+  filetype plugin indent on
+
+  " Put these in an autocmd group, so that we can delete them easily.
+  augroup vimrcEx
+  au!
+
+  " For all text files set 'textwidth' to 78 characters.
+  autocmd FileType text setlocal textwidth=78
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  " Also don't do it when the mark is in the first line, that is the default
+  " position when opening a file.
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+  augroup END
+
+else
+
+
+endif " has("autocmd")
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+          \ | wincmd p | diffthis
+endif
+
+
+
+"""""""""""""""""""""""""""""""
+""  vimrc setting
+"""""""""""""""""""""""""""""""
+"Set mapleader
+let mapleader = ","
+"set hid
+"Fast reloading of the .vimrc
+map  <leader>ss :source ~/.vimrc<cr>
+
+"Fast editing of .vimrc
+map <leader>es :e ~/.vimrc<cr>
+
+"When .vimrc is edited, reload it
+autocmd! bufwritepost .vimrc source ~/.vimrc 
+"""""""""""""""""""""""""""""""
+""map setting
+"""""""""""""""""""""""""""""""
+" Fast save
+nmap ;w :w<cr>
+map <leader>w <C-W>
+map <leader>[ <C-[>
+map <leader>] <C-\>
+map <leader>\ <C-\><C-\>
+
+
+nmap ;l :new<cr>
+nmap ;L :vnew<cr>
+
+
+"Fast open sh by conque term
+map <leader>sh :ConqueTerm sh<cr>
+map <leader>ssh :ConqueTermSplit sh<cr>
+map <leader>vsh :ConqueTermVSplit sh<cr>
+map <leader>tsh :ConqueTermTab sh<cr>
+
+"Fast open Calender 
+"map <leader>Cal :Calendar<cr>
+
+"Fast move between buffers
+map <leader>bf :bf<cr>
+map <leader>bl :bl<cr>
+map <leader>bn :bn<cr>
+map <leader>bp :bp<cr>
+
+
+"Fast move between buffers
+map <leader>tf :tabfir<cr>
+map <leader>tl :tabl<cr>
+map <leader>tn :tabn<cr>
+map <leader>tp :tabp<cr>
+""""""""""""""""""""""""""""""
+
+"""""""""""""""""""""""""""""""
+"" Ttaglist  setting
+"""""""""""""""""""""""""""""""
+let Tlist_Ctags_Cmd = '/usr/bin/ctags'
+
+"不同时显示多个文件的tag，只显示当前文件的
+let Tlist_Show_One_File = 1 
+
+"如果taglist窗口是最后一个窗口，则退出vim
+let Tlist_Exit_OnlyWindow = 1 
+
+"单击即跳转
+let Tlist_Use_SingleClick = 1 
+
+" 1表示在右侧窗口中显示taglist窗口
+let Tlist_Use_Right_Window = 1 
+
+"显示taglist菜单
+let Tlist_Show_Menu=1
+
+"启动vim自动打开taglist
+"let Tlist_Auto_Open=1 
+"启动自动打开这个选项暂时不设置。后面要让winmanager调用taglist。
+"""""""""""""""""""""""""""""""
+
+
+
+"""""""""""""""""""""""""""""""
+"" nerdtree settind
+"""""""""""""""""""""""""""""""
+let g:NERDTree_title = "[NERD Tree]" 
+let g:winManagerWindowLayout='NERDTree|TagList,BufExplorer'
+function! NERDTree_Start() 
+    exe 'NERDTree'
+endfunction 
+function! NERDTree_IsValid() 
+return 1 
+endfunction
+
+"autocmd vimenter * NERDTree  "自动打开NERDTree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif "如果nerdtree是最后一个窗口，则退出vim
+"""""""""""""""""""""""""""""""
+
+
+
+"""""""""""""""""""""""""""""""
+"" winManager setting
+"""""""""""""""""""""""""""""""
+
+"设置winmanager的宽度，默认为25
+let g:winManagerWidth = 25
+
+"在进入vim时自动打开winmanager
+let g:AutoOpenWinManager = 0 
+
+"定义打开关闭winmanager按键
+nmap <silent> <F2> :make<CR><CR>
+nmap <silent> <F9> :WMToggle<CR>
+nmap <silent> <leader>wm :WMToggle<CR>
+"nmap <leader>wm :if IsWinManagerVisible() <BAR> WMToggle<CR> <BAR> else <BAR> WMToggle<CR>:1wincmd W<CR>:1wincmd h<CR>:q<CR> endif <CR><CR>
+"nmap <F9> :if IsWinManagerVisible() <BAR> WMToggle<CR> <BAR> else <BAR> WMToggle<CR>:wincmd W<CR>:wincmd h<CR>:q<CR> endif <CR><CR>
+"""""""""""""""""""""""""""""""
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Files, backups and undo
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Turn backup off, since most stuff is in SVN, git anyway...
+set nobackup
+set nowb
+set noswapfile
+set cursorline
+"set cursorcolumn
+
+"窗口分割时,进行切换的按键热键需要连接两次,比如从下方窗口移动
+"光标到上方窗口,需要<c-w><c-w>k,非常麻烦,现在重映射为<c-k>,切换的
+"时候会变得非常方便.
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+"Persistent undo
+try
+    if MySys() == "windows"
+      set undodir=C:\Windows\Temp
+    else
+      set undodir=~/.vim/undodir
+    endif
+
+    set undofile
+catch
+endtry
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text, tab and indent related
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set shiftwidth=4
+set tabstop=4
+set expandtab
+set smarttab
+
+set lbr
+set tw=500
+
+set ai "Auto indent
+set si "Smart indet
+set wrap "Wrap lines
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" =>omnicppcomplete
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+map <F3> <ESC>0<C-v>I//<ESC><ESC>
+map <F4> <ESC>:s/^\/\///<CR>:nohl<CR>
+map <F12> :!rm tags -f <CR> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q <CR>
+map <F8> :!cscope -Rqkb <CR>:cscope add cscope.out<CR> <CR>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" =>color
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"colo bmichaelsen
+"colo desert
+"colo evening
+"colo murphy
+"colo slate
+"colo koehler
+"colo pablo
+"colo ron
+colo torte
+"colo elflord
+"colo morning
+"colo peachpuff
+"colo shine
+"colo zellner
+"colo asmdev2
+"colo blackbeauty
+"colo kalt
+"colo kaltex  " may be good
+"colo Dark2
+"colo midnight
+"colo LightDefaultGrey
+"colo delphi " good
+"colo black_angus
+"colo bluegreen  " ok 
+"colo nightshade
+"colo brown
+"colo rootwater
+"colo buttercream "ok
+"colo brookstream "ok
+"colo candycode
+"colo candy "ok
+"colo crt
+"colo desertEx
+"colo kalt
+"colo elise
+"colo lettuce
+"colo two2tango
+"colo earth
+"colo kate
+"colo ps_color
+"colo carrot
+"colo biogoo
+"colo beachcomber
+"colo sean "good
+"colo lazarus
+"colo bmichaelsen
+"colo impact "good
+"colo asmdev "good
+"colo  bensday
+"colo coffee
+"colo ChocolateLiquor
+"colo clue
+"colo robinhood
+"colo relaxedgreen "good
+"colo paintbox
+"colo phpx
+"colo putty
+"colo nour
+"colo xemacs
+"colo wuye
+"colo zen
+"colo soso
+"colo ps_color
+"colo spring
+"colo simple_b
+"colo tango-morning 
+"colo tidy
+"colo sf
+"colo pspad
+"colo phpx
+"colo nedit2
+"colo moria
+"colo LightYellow
+"colo gobo
+"colo dual 
+"colo delphi
+
+set number
+"set tags+=/home/wang/project/stl_src/cpp_src
+set completeopt=longest,menu
+
+"let OmniCpp_GlobalScopeSearch = 1  " 0 or 1
+"let OmniCpp_NamespaceSearch = 1   " 0 ,  1 or 2
+"let OmniCpp_DisplayMode = 1
+"let OmniCpp_ShowScopeInAbbr = 0
+"let OmniCpp_ShowPrototypeInAbbr = 1
+"let OmniCpp_ShowAccess = 1
+"let OmniCpp_MayCompleteDot = 1
+"let OmniCpp_MayCompleteArrow = 1
+"let OmniCpp_MayCompleteScope = 1
+
+"g:js_indent = ~/.vim/indent/javascript.vim
+
+inoremap { {}<ESC>i<CR><ESC>O
+"nnoremap <C-9> <ESC>i();<ESC>hhi
+
+
+
+

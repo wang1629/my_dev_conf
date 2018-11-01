@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/home/xiaotao/barrelfish/usr/examples/xmpl-thread'
+let g:netrw_dirhist_2='/home/xiaotao/barrelfish'
+let g:netrw_dirhist_3='/home/xiaotao/workspace/baidustars'
+let g:netrw_dirhist_4='/repo/svnrepo/conf'
+let g:netrw_dirhist_5='/home/xiaotao/vxworks/vxsource_5.5/src'
+let g:netrw_dirhist_6='/repo/barrelfish/build'
+let g:netrw_dirhist_7='/opt/eclipse/readme'
+let g:netrw_dirhist_8='/var/lib/tftpboot'
